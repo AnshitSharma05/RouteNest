@@ -95,4 +95,23 @@ router.delete('/:id', requireAuth(), async (req, res) => {
   }
 });
 
+// Toggle public status
+router.patch('/:id/share', requireAuth(), async (req, res) => {
+  try {
+    const userId = req.auth.userId;
+    const itinerary = await Itinerary.findOne({ _id: req.params.id, userId });
+    
+    if (!itinerary) {
+      return res.status(404).json({ error: 'Itinerary not found' });
+    }
+    
+    itinerary.isPublic = !itinerary.isPublic;
+    await itinerary.save();
+    
+    res.json(itinerary);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update visibility' });
+  }
+});
+
 export default router;

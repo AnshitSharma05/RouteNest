@@ -10,6 +10,7 @@ export default function NewDiary() {
   const { getToken } = useAuth();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
+  const [imageFiles, setImageFiles] = useState([]);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -23,9 +24,22 @@ export default function NewDiary() {
     setSaving(true);
     try {
       const token = await getToken();
-      await axios.post(`${API_URL}/api/memories`, formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const headers = { Authorization: `Bearer ${token}` };
+      
+      let pictureUrls = [];
+      if (imageFiles.length > 0) {
+        const uploadData = new FormData();
+        imageFiles.forEach(file => {
+          uploadData.append('images', file);
+        });
+        
+        const uploadRes = await axios.post(`${API_URL}/api/upload`, uploadData, {
+          headers: { ...headers, 'Content-Type': 'multipart/form-data' }
+        });
+        pictureUrls = uploadRes.data.urls;
+      }
+
+      await axios.post(`${API_URL}/api/memories`, { ...formData, pictures: pictureUrls }, { headers });
       navigate('/dashboard');
     } catch (err) {
       console.error(err);
@@ -74,6 +88,23 @@ export default function NewDiary() {
                 onChange={e => setFormData({...formData, dateOfTrip: e.target.value})}
               />
             </div>
+          </div>
+        
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Upload Photos (Max 5)</label>
+            <input 
+              type="file" 
+              multiple
+              accept="image/*"
+              className="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-light file:text-brand-primary hover:file:bg-sky-100"
+              onChange={e => {
+                const files = Array.from(e.target.files).slice(0, 5);
+                setImageFiles(files);
+              }}
+            />
+            {imageFiles.length > 0 && (
+              <p className="mt-2 text-sm text-brand-primary font-medium">{imageFiles.length} photo(s) selected</p>
+            )}
           </div>
 
           <div>

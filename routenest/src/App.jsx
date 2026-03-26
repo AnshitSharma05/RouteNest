@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard'
 import NewDiary from './pages/NewDiary'
 import Recommendations from './pages/Recommendations'
 import ItineraryGen from './pages/ItineraryGen'
+import SharedItinerary from './pages/SharedItinerary'
 
 function ProtectedRoute({ children }) {
   const { isLoaded, isSignedIn } = useAuth();
@@ -28,6 +29,7 @@ function App() {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/shared/itinerary/:id" element={<SharedItinerary />} />
           <Route 
             path="/dashboard" 
             element={<ProtectedRoute><Dashboard /></ProtectedRoute>} 

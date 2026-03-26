@@ -17,6 +17,10 @@ const itinerarySchema = new mongoose.Schema({
     type: String, // Store Gemini markdown output
     required: true,
   },
+  isPublic: {
+    type: Boolean,
+    default: false
+  },
   createdAt: {
     type: Date,
     default: Date.now,

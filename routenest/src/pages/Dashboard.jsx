@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Plus, Trash2, Calendar, MapPin } from 'lucide-react';
+import { Plus, Trash2, Calendar, MapPin, Share2, Link as LinkIcon, Lock } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -58,6 +58,23 @@ export default function Dashboard() {
     }
   };
 
+  const toggleShare = async (id) => {
+    try {
+      const token = await getToken();
+      const res = await axios.patch(`${API_URL}/api/itineraries/${id}/share`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setItineraries(itineraries.map(i => i._id === id ? res.data : i));
+    } catch(e) {
+      alert("Error sharing itinerary");
+    }
+  };
+
+  const copyLink = (id) => {
+    navigator.clipboard.writeText(`${window.location.origin}/shared/itinerary/${id}`);
+    alert("Public link copied to clipboard!");
+  };
+
   if (loading) return <div className="p-10 text-center text-slate-500">Loading your journey...</div>;
 
   return (
@@ -80,16 +97,22 @@ export default function Dashboard() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {memories.map(m => (
-              <div key={m._id} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-lg transition-all relative group">
-                <button onClick={() => deleteMemory(m._id)} className="absolute top-4 right-4 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div key={m._id} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-lg transition-all relative group flex flex-col">
+                <button onClick={() => deleteMemory(m._id)} className="absolute top-4 right-4 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-white/50 rounded-full p-1">
                   <Trash2 className="w-5 h-5" />
                 </button>
+                {m.pictures && m.pictures.length > 0 && (
+                  <div className="flex overflow-x-auto gap-2 mb-4 pb-2 snap-x hide-scrollbar">
+                    {m.pictures.map((pic, idx) => (
+                      <img key={idx} src={pic} alt={`Memory ${idx+1}`} className="w-48 h-32 object-cover rounded-xl shadow-sm snap-center shrink-0" />
+                    ))}
+                  </div>
+                )}
                 <h3 className="text-xl font-bold text-slate-800 mb-2">{m.title}</h3>
                 <div className="flex items-center gap-1 text-sm font-medium text-brand-primary mb-3">
                   <MapPin className="w-4 h-4" /> {m.location || 'Unknown'}
                 </div>
                 <p className="text-slate-600 line-clamp-3">{m.story}</p>
-                {m.pictures?.length > 0 && <div className="mt-4 text-sm text-slate-400">Contains photos</div>}
               </div>
             ))}
           </div>
@@ -107,18 +130,31 @@ export default function Dashboard() {
         ) : (
           <div className="grid md:grid-cols-2 gap-6">
             {itineraries.map(i => (
-              <div key={i._id} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 relative group">
+              <div key={i._id} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 relative group flex flex-col">
                 <button onClick={() => deleteItinerary(i._id)} className="absolute top-4 right-4 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
                   <Trash2 className="w-5 h-5" />
                 </button>
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex justify-between items-start mb-4 pr-8">
                   <div>
-                    <h3 className="text-xl font-bold text-slate-800">{i.destination}</h3>
+                    <h3 className="text-xl font-bold text-slate-800 leading-tight mb-1">{i.destination}</h3>
                     <div className="text-sm font-medium text-brand-primary">{i.days} Days</div>
                   </div>
                 </div>
-                <div className="prose prose-sm prose-slate max-w-none line-clamp-4 h-32 overflow-hidden mask-image-bottom">
+                <div className="prose prose-sm prose-slate max-w-none line-clamp-4 h-24 overflow-hidden mask-image-bottom mb-4">
                    <p className="whitespace-pre-wrap text-slate-600">{i.content}</p>
+                </div>
+                
+                {/* Sharing Controls */}
+                <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <button onClick={() => toggleShare(i._id)} className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg transition-colors ${i.isPublic ? 'bg-sky-50 text-brand-primary border border-sky-100' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}>
+                    {i.isPublic ? <><Share2 className="w-4 h-4"/> Public</> : <><Lock className="w-4 h-4"/> Private</>}
+                  </button>
+                  
+                  {i.isPublic && (
+                    <button onClick={() => copyLink(i._id)} className="text-sm font-medium text-brand-secondary hover:text-brand-accent flex items-center gap-1 transition-colors bg-brand-light px-3 py-1.5 rounded-lg">
+                      <LinkIcon className="w-4 h-4" /> Copy Link
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
