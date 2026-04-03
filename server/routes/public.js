@@ -1,17 +1,21 @@
 import express from 'express';
-import Itinerary from '../models/Itinerary.js';
+import { supabase } from '../lib/supabase.js';
 
 const router = express.Router();
 
 router.get('/itineraries/:id', async (req, res) => {
   try {
-    const itinerary = await Itinerary.findById(req.params.id);
+    const { data: itinerary, error } = await supabase
+      .from('itineraries')
+      .select('*')
+      .eq('id', req.params.id)
+      .single();
     
-    if (!itinerary) {
+    if (error || !itinerary) {
       return res.status(404).json({ error: 'Itinerary not found' });
     }
     
-    if (!itinerary.isPublic) {
+    if (!itinerary.is_public) {
       return res.status(403).json({ error: 'This itinerary is completely private' });
     }
     

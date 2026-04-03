@@ -1,7 +1,7 @@
 import express from 'express';
 import { requireAuth } from '@clerk/express';
 import { GoogleGenAI } from '@google/genai';
-import Itinerary from '../models/Itinerary.js';
+import { supabase } from '../lib/supabase.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -41,7 +41,7 @@ Format the itinerary clearly in Markdown, day by day. Please make it sound like 
   }
 });
 
-// Save an itinerary to DB
+// Save an itinerary to Supabase
 router.post('/save', requireAuth(), async (req, res) => {
   try {
     const userId = req.auth.userId;
@@ -51,15 +51,22 @@ router.post('/save', requireAuth(), async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const newItinerary = new Itinerary({
-      userId,
-      destination,
-      days,
-      content
-    });
+    const { data, error } = await supabase
+      .from('itineraries')
+      .insert([
+        {
+          user_id: userId,
+          destination,
+          days,
+          content,
+          is_public: false
+        }
+      ])
+      .select()
+      .single();
 
-    const savedItinerary = await newItinerary.save();
-    res.status(201).json(savedItinerary);
+    if (error) throw error;
+    res.status(201).json(data);
   } catch (error) {
     console.error('Error saving itinerary:', error);
     res.status(500).json({ error: 'Failed to save itinerary' });
@@ -70,8 +77,14 @@ router.post('/save', requireAuth(), async (req, res) => {
 router.get('/', requireAuth(), async (req, res) => {
   try {
     const userId = req.auth.userId;
-    const itineraries = await Itinerary.find({ userId }).sort({ createdAt: -1 });
-    res.json(itineraries);
+    const { data, error } = await supabase
+      .from('itineraries')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json(data);
   } catch (error) {
     console.error('Error fetching itineraries:', error);
     res.status(500).json({ error: 'Failed to fetch itineraries' });
@@ -82,13 +95,18 @@ router.get('/', requireAuth(), async (req, res) => {
 router.delete('/:id', requireAuth(), async (req, res) => {
   try {
     const userId = req.auth.userId;
-    const itinerary = await Itinerary.findOne({ _id: req.params.id, userId });
+    const { data, error } = await supabase
+      .from('itineraries')
+      .delete()
+      .eq('id', req.params.id)
+      .eq('user_id', userId)
+      .select();
     
-    if (!itinerary) {
+    if (error) throw error;
+    if (data.length === 0) {
       return res.status(404).json({ error: 'Itinerary not found' });
     }
     
-    await itinerary.deleteOne();
     res.json({ message: 'Itinerary deleted' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete' });
@@ -99,16 +117,28 @@ router.delete('/:id', requireAuth(), async (req, res) => {
 router.patch('/:id/share', requireAuth(), async (req, res) => {
   try {
     const userId = req.auth.userId;
-    const itinerary = await Itinerary.findOne({ _id: req.params.id, userId });
+    const { data: itinerary, error: fetchErr } = await supabase
+      .from('itineraries')
+      .select('*')
+      .eq('id', req.params.id)
+      .eq('user_id', userId)
+      .single();
     
-    if (!itinerary) {
+    if (fetchErr || !itinerary) {
       return res.status(404).json({ error: 'Itinerary not found' });
     }
     
-    itinerary.isPublic = !itinerary.isPublic;
-    await itinerary.save();
+    const { data, error: updateErr } = await supabase
+      .from('itineraries')
+      .update({ is_public: !itinerary.is_public })
+      .eq('id', req.params.id)
+      .eq('user_id', userId)
+      .select()
+      .single();
+
+    if (updateErr) throw updateErr;
     
-    res.json(itinerary);
+    res.json(data);
   } catch (error) {
     res.status(500).json({ error: 'Failed to update visibility' });
   }

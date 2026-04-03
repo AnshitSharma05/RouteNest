@@ -1,5 +1,4 @@
 import express from 'express';
-import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import memoryRoutes from './routes/memories.js';
@@ -28,21 +27,6 @@ app.get('/', (req, res) => {
   res.send('RouteNest API is running');
 });
 
-// Mock database connection for now until URI is provided
-const connectDB = async () => {
-  try {
-    if (process.env.MONGODB_URI) {
-      await mongoose.connect(process.env.MONGODB_URI);
-      console.log('MongoDB connected');
-    } else {
-      console.log('No MONGODB_URI found in .env, skipping connection for now.');
-    }
-  } catch (err) {
-    console.error('MongoDB connection error', err);
-  }
-};
-
-app.listen(PORT, async () => {
-  await connectDB();
+app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

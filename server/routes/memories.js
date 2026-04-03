@@ -1,6 +1,6 @@
 import express from 'express';
 import { requireAuth } from '@clerk/express';
-import Memory from '../models/Memory.js';
+import { supabase } from '../lib/supabase.js';
 
 const router = express.Router();
 
@@ -8,8 +8,14 @@ const router = express.Router();
 router.get('/', requireAuth(), async (req, res) => {
   try {
     const userId = req.auth.userId;
-    const memories = await Memory.find({ userId }).sort({ createdAt: -1 });
-    res.json(memories);
+    const { data, error } = await supabase
+      .from('memories')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json(data);
   } catch (error) {
     console.error('Error fetching memories:', error);
     res.status(500).json({ error: 'Failed to fetch memories' });
@@ -26,17 +32,23 @@ router.post('/', requireAuth(), async (req, res) => {
       return res.status(400).json({ error: 'Title and story are required' });
     }
 
-    const newMemory = new Memory({
-      userId,
-      title,
-      story,
-      pictures: pictures || [],
-      location,
-      dateOfTrip
-    });
+    const { data, error } = await supabase
+      .from('memories')
+      .insert([
+        {
+          user_id: userId,
+          title,
+          story,
+          pictures: pictures || [],
+          location,
+          date_of_trip: dateOfTrip || null
+        }
+      ])
+      .select()
+      .single();
 
-    const savedMemory = await newMemory.save();
-    res.status(201).json(savedMemory);
+    if (error) throw error;
+    res.status(201).json(data);
   } catch (error) {
     console.error('Error creating memory:', error);
     res.status(500).json({ error: 'Failed to create memory' });
@@ -49,13 +61,18 @@ router.delete('/:id', requireAuth(), async (req, res) => {
     const userId = req.auth.userId;
     const memoryId = req.params.id;
     
-    const memory = await Memory.findOne({ _id: memoryId, userId });
-    
-    if (!memory) {
+    const { data, error } = await supabase
+      .from('memories')
+      .delete()
+      .eq('id', memoryId)
+      .eq('user_id', userId)
+      .select();
+
+    if (error) throw error;
+    if (data.length === 0) {
       return res.status(404).json({ error: 'Memory not found or unauthorized' });
     }
     
-    await memory.deleteOne();
     res.json({ message: 'Memory deleted successfully' });
   } catch (error) {
     console.error('Error deleting memory:', error);
