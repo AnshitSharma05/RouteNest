@@ -1,14 +1,9 @@
 import express from 'express';
 import { requireAuth } from '@clerk/express';
 import multer from 'multer';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabase.js';
 
 const router = express.Router();
-
-// Initialize Supabase Client
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY; // OR SUPABASE_ANON_KEY depending on what you have
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Use memory storage to process uploads directly via buffer rather than local disk
 const storage = multer.memoryStorage();
@@ -21,6 +16,12 @@ router.post('/', requireAuth(), upload.array('images', 5), async (req, res) => {
     }
     
     const urls = [];
+    
+    // Automatically create 'memories' bucket if it doesn't exist
+    const { data: buckets } = await supabase.storage.listBuckets();
+    if (!buckets.find(b => b.name === 'memories')) {
+      await supabase.storage.createBucket('memories', { public: true });
+    }
     
     for (const file of req.files) {
       // Create a unique filename

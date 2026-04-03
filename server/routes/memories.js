@@ -1,5 +1,5 @@
 import express from 'express';
-import { requireAuth } from '@clerk/express';
+import { requireAuth, getAuth } from '@clerk/express';
 import { supabase } from '../lib/supabase.js';
 
 const router = express.Router();
@@ -7,7 +7,7 @@ const router = express.Router();
 // Get all memories for the authenticated user
 router.get('/', requireAuth(), async (req, res) => {
   try {
-    const userId = req.auth.userId;
+    const { userId } = getAuth(req);
     const { data, error } = await supabase
       .from('memories')
       .select('*')
@@ -25,7 +25,7 @@ router.get('/', requireAuth(), async (req, res) => {
 // Create a new memory
 router.post('/', requireAuth(), async (req, res) => {
   try {
-    const userId = req.auth.userId;
+    const { userId } = getAuth(req);
     const { title, story, pictures, location, dateOfTrip } = req.body;
     
     if (!title || !story) {
@@ -58,7 +58,7 @@ router.post('/', requireAuth(), async (req, res) => {
 // Delete a memory
 router.delete('/:id', requireAuth(), async (req, res) => {
   try {
-    const userId = req.auth.userId;
+    const { userId } = getAuth(req);
     const memoryId = req.params.id;
     
     const { data, error } = await supabase

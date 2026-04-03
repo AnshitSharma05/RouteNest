@@ -49,6 +49,17 @@ export default function ItineraryGen() {
     }
   };
 
+  const handleShareToggle = async (id) => {
+    try {
+      const token = await getToken();
+      await axios.patch(`${API_URL}/api/itineraries/${id}/share`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      await fetchItineraries();
+    } catch (e) {
+      alert("Error toggling share status");
+    }
+  };
+
+
   const handleGenerate = async (e) => {
     e.preventDefault();
     if (!form.destination) return;
@@ -151,16 +162,34 @@ export default function ItineraryGen() {
         {/* View Generated / Selected Itinerary State */}
         {activeView && activeView !== 'new' && selectedItinerary && (
           <div className="w-full max-w-4xl space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-            <div className="border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] p-6 md:p-8 bg-white flex justify-between items-center">
+            <div className="border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] p-6 md:p-8 bg-white flex flex-col md:flex-row justify-between md:items-center gap-6">
               <div>
                 <h1 className="text-3xl font-black mb-2 uppercase">ITINERARY FOR {selectedItinerary.destination}</h1>
                 <p className="font-bold text-gray-600">{selectedItinerary.days} days of adventure</p>
               </div>
-              <button 
-                onClick={() => deleteItinerary(selectedItinerary.id)}
-                className="bg-[#FFB3BA] border-4 border-black font-black uppercase px-4 py-2 hover:bg-[#ff9aa3] shadow-[2px_2px_0_rgba(0,0,0,1)] flex items-center gap-2 text-sm">
-                <Trash2 className="w-4 h-4" /> Delete
-              </button>
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-3">
+                  <button 
+                    onClick={() => handleShareToggle(selectedItinerary.id)}
+                    className={`${selectedItinerary.is_public ? 'bg-[#BAE1FF]' : 'bg-gray-100 text-gray-500'} border-4 border-black font-black uppercase px-4 py-2 hover:shadow-[2px_2px_0_rgba(0,0,0,1)] flex items-center gap-2 text-sm transition-all`}>
+                    {selectedItinerary.is_public ? <><LinkIcon className="w-4 h-4" /> Public</> : <><Lock className="w-4 h-4" /> Private</>}
+                  </button>
+                  <button 
+                    onClick={() => deleteItinerary(selectedItinerary.id)}
+                    className="bg-[#FFB3BA] border-4 border-black font-black uppercase px-4 py-2 hover:bg-[#ff9aa3] shadow-[2px_2px_0_rgba(0,0,0,1)] flex items-center gap-2 text-sm transition-all">
+                    <Trash2 className="w-4 h-4" /> Delete
+                  </button>
+                </div>
+                {selectedItinerary.is_public && (
+                  <div className="flex items-center gap-2">
+                    <input type="text" readOnly value={`${window.location.origin}/shared/itinerary/${selectedItinerary.id}`} className="border-2 border-black p-1 text-xs flex-1 bg-gray-50 uppercase font-bold" />
+                    <button onClick={() => {
+                      navigator.clipboard.writeText(`${window.location.origin}/shared/itinerary/${selectedItinerary.id}`);
+                      alert("Link Copied!");
+                    }} className="bg-black text-white text-xs font-black uppercase px-2 py-1.5 border-2 border-black">Copy</button>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="bg-white border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] p-8">

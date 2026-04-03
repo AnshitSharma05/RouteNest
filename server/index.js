@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { clerkMiddleware } from '@clerk/express';
 import memoryRoutes from './routes/memories.js';
 import recommendationRoutes from './routes/recommendations.js';
 import itineraryRoutes from './routes/itineraries.js';
@@ -15,6 +16,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(clerkMiddleware());
 
 // Routes
 app.use('/api/public', publicRoutes);
@@ -31,4 +33,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// Triggering nodemon restart to load new .env variables
+// Triggering nodemon restart to load new .env variables 2

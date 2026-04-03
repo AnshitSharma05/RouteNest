@@ -1,5 +1,5 @@
 import express from 'express';
-import { requireAuth } from '@clerk/express';
+import { requireAuth, getAuth } from '@clerk/express';
 import { GoogleGenAI } from '@google/genai';
 import { supabase } from '../lib/supabase.js';
 import dotenv from 'dotenv';
@@ -44,7 +44,14 @@ Format the itinerary clearly in Markdown, day by day. Please make it sound like 
 // Save an itinerary to Supabase
 router.post('/save', requireAuth(), async (req, res) => {
   try {
-    const userId = req.auth.userId;
+    const auth = getAuth(req);
+    const userId = auth.userId || req.auth?.userId;
+    console.log('Decoded Auth Payload:', JSON.stringify(auth));
+    
+    if (!userId) {
+       return res.status(401).json({ error: 'Unauthorized: User ID is missing' });
+    }
+
     const { destination, days, content } = req.body;
 
     if (!destination || !days || !content) {
@@ -76,7 +83,7 @@ router.post('/save', requireAuth(), async (req, res) => {
 // Get user's saved itineraries
 router.get('/', requireAuth(), async (req, res) => {
   try {
-    const userId = req.auth.userId;
+    const { userId } = getAuth(req);
     const { data, error } = await supabase
       .from('itineraries')
       .select('*')
@@ -94,7 +101,7 @@ router.get('/', requireAuth(), async (req, res) => {
 // Delete an itinerary
 router.delete('/:id', requireAuth(), async (req, res) => {
   try {
-    const userId = req.auth.userId;
+    const { userId } = getAuth(req);
     const { data, error } = await supabase
       .from('itineraries')
       .delete()
@@ -116,7 +123,7 @@ router.delete('/:id', requireAuth(), async (req, res) => {
 // Toggle public status
 router.patch('/:id/share', requireAuth(), async (req, res) => {
   try {
-    const userId = req.auth.userId;
+    const { userId } = getAuth(req);
     const { data: itinerary, error: fetchErr } = await supabase
       .from('itineraries')
       .select('*')
