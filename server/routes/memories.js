@@ -80,4 +80,33 @@ router.delete('/:id', requireAuth(), async (req, res) => {
   }
 });
 
+// Update an existing memory
+router.patch('/:id', requireAuth(), async (req, res) => {
+  try {
+    const { userId } = getAuth(req);
+    const memoryId = req.params.id;
+    const { title, story, pictures, location, dateOfTrip } = req.body;
+
+    const { data, error } = await supabase
+      .from('memories')
+      .update({
+        title,
+        story,
+        pictures,
+        location,
+        date_of_trip: dateOfTrip || null
+      })
+      .eq('id', memoryId)
+      .eq('user_id', userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    console.error('Error updating memory:', error);
+    res.status(500).json({ error: 'Failed to update memory' });
+  }
+});
+
 export default router;
