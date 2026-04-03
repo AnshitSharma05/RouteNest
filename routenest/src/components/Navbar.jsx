@@ -18,9 +18,7 @@ export default function Navbar() {
       <div className="w-full px-6 flex justify-between items-center h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="bg-[#83B8F2] w-10 h-10 flex items-center justify-center border-2 border-black group-hover:-translate-y-1 transition-transform">
-                <Briefcase className="w-6 h-6 text-black" />
-              </div>
+              <img src="/logo.png" alt="RouteNest Logo" className="h-12 w-auto group-hover:-translate-y-1 transition-transform" />
               <div className="flex flex-col">
                 <span className="text-[#FFD166] font-black text-2xl tracking-tighter uppercase leading-none">
                   RouteNest
