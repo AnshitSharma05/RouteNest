@@ -15,8 +15,7 @@ export default function Navbar() {
 
   return (
     <nav className="bg-[#18181b] text-white sticky top-0 z-50 border-b-4 border-black">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+      <div className="w-full px-6 flex justify-between items-center h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-3 group">
               <div className="bg-[#83B8F2] w-10 h-10 flex items-center justify-center border-2 border-black group-hover:-translate-y-1 transition-transform">
@@ -60,7 +59,6 @@ export default function Navbar() {
             </SignedOut>
           </div>
         </div>
-      </div>
     </nav>
   );
 }
