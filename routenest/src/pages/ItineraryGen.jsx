@@ -216,7 +216,7 @@ export default function ItineraryGen() {
               <div className="grid md:grid-cols-2 gap-6 items-start">
                 <div>
                   <label className="block mb-2 uppercase tracking-wide">Duration</label>
-                  <select value={form.days} onChange={e => setForm({...form, days: e.target.value})} className="w-full border-4 border-black p-3 focus:outline-none focus:ring-4 focus:ring-[#90EE90] transition-all bg-white cursor-pointer appearance-none text-black">
+                  <select value={form.days} onChange={e => setForm({...form, days: parseInt(e.target.value) || 7})} className="w-full border-4 border-black p-3 focus:outline-none focus:ring-4 focus:ring-[#90EE90] transition-all bg-white cursor-pointer appearance-none text-black">
                     {[1,2,3,4,5,6,7,10,14].map(d => <option key={d} value={d}>{d} days</option>)}
                   </select>
                 </div>
