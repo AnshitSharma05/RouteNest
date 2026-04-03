@@ -1,38 +1,42 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@clerk/clerk-react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Plus, Trash2, Calendar, MapPin, Share2, Link as LinkIcon, Lock } from 'lucide-react';
+import { Trash2, MapPin, Calendar, Edit2, Upload, Compass, Image as ImageIcon } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+const CARD_COLORS = ['#BAE1FF', '#FFDFD3', '#FFB3BA', '#90EE90', '#FFD166', '#E2B4D6'];
+const EMOJIS = ['✈️', '🗺️', '🏖️', '⛰️', '🌍', '🎒', '🚂', '⛵', '🌸', '🏛️'];
 
 export default function Dashboard() {
   const { getToken } = useAuth();
   const [memories, setMemories] = useState([]);
-  const [itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeView, setActiveView] = useState(null); // null, 'new', or memory id
+  
+  // New Story State
+  const [saving, setSaving] = useState(false);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [formData, setFormData] = useState({
+    title: '', location: '', dateOfTrip: '', story: '', emoji: '✈️', color: '#FFDFD3'
+  });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = await getToken();
-        const headers = { Authorization: `Bearer ${token}` };
-        
-        const [memRes, iteRes] = await Promise.all([
-          axios.get(`${API_URL}/api/memories`, { headers }),
-          axios.get(`${API_URL}/api/itineraries`, { headers })
-        ]);
-
-        setMemories(memRes.data);
-        setItineraries(iteRes.data);
-      } catch (error) {
-        console.error("Failed to fetch dashboard data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+    fetchMemories();
   }, [getToken]);
+
+  const fetchMemories = async () => {
+    try {
+      setLoading(true);
+      const token = await getToken();
+      const res = await axios.get(`${API_URL}/api/memories`, { headers: { Authorization: `Bearer ${token}` } });
+      setMemories(res.data);
+    } catch (error) {
+      console.error("Failed to fetch memories:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const deleteMemory = async (id) => {
     try {
@@ -41,125 +45,212 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMemories(memories.filter(m => m.id !== id));
+      if (activeView === id) setActiveView(null);
     } catch (e) {
       alert("Error deleting memory");
     }
   };
 
-  const deleteItinerary = async (id) => {
+  const handleSubmitNewStory = async (e) => {
+    e.preventDefault();
+    setSaving(true);
     try {
       const token = await getToken();
-      await axios.delete(`${API_URL}/api/itineraries/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setItineraries(itineraries.filter(i => i.id !== id));
-    } catch (e) {
-      alert("Error deleting itinerary");
+      const headers = { Authorization: `Bearer ${token}` };
+      
+      let pictureUrls = [];
+      if (imageFiles.length > 0) {
+        const uploadData = new FormData();
+        imageFiles.forEach(file => uploadData.append('images', file));
+        const uploadRes = await axios.post(`${API_URL}/api/upload`, uploadData, {
+          headers: { ...headers, 'Content-Type': 'multipart/form-data' }
+        });
+        pictureUrls = uploadRes.data.urls;
+      }
+
+      await axios.post(`${API_URL}/api/memories`, { ...formData, pictures: pictureUrls }, { headers });
+      await fetchMemories();
+      setActiveView(null);
+      setFormData({ title: '', location: '', dateOfTrip: '', story: '', emoji: '✈️', color: '#FFDFD3' });
+      setImageFiles([]);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save memory.');
+    } finally {
+      setSaving(false);
     }
   };
 
-  const toggleShare = async (id) => {
-    try {
-      const token = await getToken();
-      const res = await axios.patch(`${API_URL}/api/itineraries/${id}/share`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setItineraries(itineraries.map(i => i.id === id ? res.data : i));
-    } catch(e) {
-      alert("Error sharing itinerary");
-    }
-  };
+  const selectedMemory = memories.find(m => m.id === activeView);
 
-  const copyLink = (id) => {
-    navigator.clipboard.writeText(`${window.location.origin}/shared/itinerary/${id}`);
-    alert("Public link copied to clipboard!");
-  };
-
-  if (loading) return <div className="p-10 text-center text-slate-500">Loading your journey...</div>;
+  if (loading) return <div className="h-[calc(100vh-80px)] flex items-center justify-center bg-[#F4F1E1] font-black text-2xl">LOADING...</div>;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-slate-800">Your Travel Dashboard</h1>
-        <Link to="/diary/new" className="bg-brand-primary text-white flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium shadow-md shadow-sky-200 hover:bg-sky-600 transition-colors">
-          <Plus className="w-5 h-5" /> New Diary
-        </Link>
-      </div>
+    <div className="flex h-[calc(100vh-80px)] bg-[#F4F1E1] text-[#111] overflow-hidden font-sans">
+      
+      {/* Sidebar */}
+      <div className="w-80 bg-white border-r-4 border-black flex flex-col shrink-0 z-10 shadow-[4px_0_0_rgba(0,0,0,1)]">
+        <div className="bg-[#FFD166] border-b-4 border-black p-5">
+          <h2 className="font-black tracking-widest uppercase text-lg leading-none">My Travel Stories</h2>
+          <p className="text-sm font-bold text-gray-700 mt-1">{memories.length} adventures saved</p>
+        </div>
+        
+        <div className="p-4 flex-1 overflow-y-auto">
+          <button 
+            onClick={() => setActiveView('new')}
+            className="w-full bg-[#90EE90] border-4 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] py-3 font-black uppercase text-sm mb-6 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all">
+            + New Story
+          </button>
 
-      <div className="mb-12">
-        <h2 className="text-2xl font-semibold text-slate-700 mb-6 flex items-center gap-2">
-          <Calendar className="w-6 h-6 text-brand-primary" /> Memory Diaries
-        </h2>
-        {memories.length === 0 ? (
-          <div className="bg-white/50 border border-dashed border-sky-200 rounded-2xl p-10 text-center text-slate-500">
-            No memories yet. Time to log an adventure!
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {memories.map(m => (
-              <div key={m.id} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-lg transition-all relative group flex flex-col">
-                <button onClick={() => deleteMemory(m.id)} className="absolute top-4 right-4 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-white/50 rounded-full p-1">
-                  <Trash2 className="w-5 h-5" />
-                </button>
-                {m.pictures && m.pictures.length > 0 && (
-                  <div className="flex overflow-x-auto gap-2 mb-4 pb-2 snap-x hide-scrollbar">
-                    {m.pictures.map((pic, idx) => (
-                      <img key={idx} src={pic} alt={`Memory ${idx+1}`} className="w-48 h-32 object-cover rounded-xl shadow-sm snap-center shrink-0" />
-                    ))}
-                  </div>
-                )}
-                <h3 className="text-xl font-bold text-slate-800 mb-2">{m.title}</h3>
-                <div className="flex items-center gap-1 text-sm font-medium text-brand-primary mb-3">
-                  <MapPin className="w-4 h-4" /> {m.location || 'Unknown'}
-                </div>
-                <p className="text-slate-600 line-clamp-3">{m.story}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div>
-        <h2 className="text-2xl font-semibold text-slate-700 mb-6 flex items-center gap-2">
-          <MapPin className="w-6 h-6 text-brand-primary" /> Saved Itineraries
-        </h2>
-        {itineraries.length === 0 ? (
-           <div className="bg-white/50 border border-dashed border-sky-200 rounded-2xl p-10 text-center text-slate-500">
-             No saved itineraries. <Link to="/itinerary" className="text-brand-primary font-medium hover:underline">Generate one now.</Link>
-           </div>
-        ) : (
-          <div className="grid md:grid-cols-2 gap-6">
-            {itineraries.map(i => (
-              <div key={i.id} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 relative group flex flex-col">
-                <button onClick={() => deleteItinerary(i.id)} className="absolute top-4 right-4 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Trash2 className="w-5 h-5" />
-                </button>
-                <div className="flex justify-between items-start mb-4 pr-8">
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-800 leading-tight mb-1">{i.destination}</h3>
-                    <div className="text-sm font-medium text-brand-primary">{i.days} Days</div>
+          <div className="space-y-4">
+            {memories.map(m => {
+              const isSelected = activeView === m.id;
+              // Hardcoding emoji and color for existing memories if missing
+              const mColor = m.color || '#FFDFD3';
+              const mEmoji = m.emoji || '🍜';
+              
+              return (
+                <div 
+                  key={m.id} 
+                  onClick={() => setActiveView(m.id)}
+                  className={`border-4 border-black p-3 cursor-pointer transition-all ${isSelected ? 'shadow-[4px_4px_0px_rgba(0,0,0,1)] translate-x-[-2px] translate-y-[-2px]' : 'shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_rgba(0,0,0,1)]'}`}
+                  style={{ backgroundColor: isSelected ? mColor : '#FFFFFF' }}>
+                  <div className="flex gap-2 items-start">
+                    <span className="text-xl">{mEmoji}</span>
+                    <div className="flex-1 overflow-hidden">
+                      <h4 className="font-black text-[13px] truncate">{m.title}</h4>
+                      <p className="font-bold text-[10px] text-gray-700 mt-0.5 truncate uppercase">{m.location}</p>
+                      <p className="font-bold text-[10px] text-gray-500 mb-2 truncate">{m.dateOfTrip || 'Unknown Date'}</p>
+                      <div className="inline-block bg-[#FFD166] border-2 border-black px-1.5 py-0.5 text-[9px] font-black shadow-[1px_1px_0_rgba(0,0,0,1)]">
+                        📸 {m.pictures?.length || 0} PHOTOS
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="prose prose-sm prose-slate max-w-none line-clamp-4 h-24 overflow-hidden mask-image-bottom mb-4">
-                   <p className="whitespace-pre-wrap text-slate-600">{i.content}</p>
-                </div>
-                
-                {/* Sharing Controls */}
-                <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <button onClick={() => toggleShare(i.id)} className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg transition-colors ${i.is_public ? 'bg-sky-50 text-brand-primary border border-sky-100' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}>
-                    {i.is_public ? <><Share2 className="w-4 h-4"/> Public</> : <><Lock className="w-4 h-4"/> Private</>}
-                  </button>
-                  
-                  {i.is_public && (
-                    <button onClick={() => copyLink(i.id)} className="text-sm font-medium text-brand-secondary hover:text-brand-accent flex items-center gap-1 transition-colors bg-brand-light px-3 py-1.5 rounded-lg">
-                      <LinkIcon className="w-4 h-4" /> Copy Link
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-y-auto p-4 md:p-8 flex justify-center items-start">
+        
+        {/* Empty State */}
+        {!activeView && (
+          <div className="flex flex-col items-center justify-center h-full text-center max-w-sm mx-auto opacity-80">
+            <div className="w-24 h-24 bg-[#FFD166] rounded-full border-4 border-black flex items-center justify-center shadow-[6px_6px_0_rgba(0,0,0,1)] mb-6 -rotate-6">
+              <Compass className="w-12 h-12" />
+            </div>
+            <h2 className="text-3xl font-black uppercase mb-2">Select a Story</h2>
+            <p className="font-bold text-gray-600">or click "NEW STORY" to start your next adventure</p>
           </div>
         )}
+
+        {/* View Memory State */}
+        {activeView && activeView !== 'new' && selectedMemory && (
+          <div className="w-full max-w-4xl space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            
+            {/* Header Box */}
+            <div className="border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6" style={{ backgroundColor: selectedMemory.color || '#FFDFD3' }}>
+              <div className="flex items-center gap-4">
+                <div className="text-5xl">{selectedMemory.emoji || '🍜'}</div>
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-black mb-3">{selectedMemory.title}</h1>
+                  <div className="flex flex-wrap gap-2 text-xs font-bold uppercase tracking-wider">
+                    <span className="bg-black text-white px-3 py-1 flex items-center gap-1.5"><MapPin className="w-3 h-3" /> {selectedMemory.location}</span>
+                    <span className="bg-white border-2 border-black px-3 py-1 flex items-center gap-1.5"><Calendar className="w-3 h-3" /> {selectedMemory.dateOfTrip}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex shrink-0 gap-3">
+                <button className="bg-white border-4 border-black font-black uppercase px-4 py-2 hover:bg-gray-100 transition-colors shadow-[2px_2px_0_rgba(0,0,0,1)] flex items-center gap-2 text-sm">
+                  <Edit2 className="w-4 h-4" /> Edit
+                </button>
+                <button 
+                  onClick={() => deleteMemory(selectedMemory.id)}
+                  className="bg-[#FFB3BA] border-4 border-black font-black uppercase px-4 py-2 hover:bg-[#ff9aa3] transition-colors shadow-[2px_2px_0_rgba(0,0,0,1)] flex items-center gap-2 text-sm">
+                  <Trash2 className="w-4 h-4" /> Delete
+                </button>
+              </div>
+            </div>
+
+            {/* Photos Box */}
+            {selectedMemory.pictures?.length > 0 && (
+              <div className="bg-white border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] p-6">
+                <h3 className="font-black uppercase mb-4 flex items-center gap-2 text-sm"><ImageIcon className="w-4 h-4" /> Travel Photos</h3>
+                <div className="flex overflow-x-auto gap-4 pb-4">
+                  {selectedMemory.pictures.map((pic, idx) => (
+                    <div key={idx} className="shrink-0 border-4 border-black p-2 bg-white shadow-[4px_4px_0_rgba(0,0,0,1)] flex flex-col w-64 group cursor-pointer hover:-translate-y-1 hover:shadow-[6px_6px_0_rgba(0,0,0,1)] transition-all">
+                      <img src={pic} className="w-full h-40 object-cover border-b-2 border-black" alt="Memory" />
+                      <div className="p-2 text-[10px] font-black uppercase truncate mt-1">Photo {idx + 1}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Notes Box */}
+            <div className="bg-white border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] p-6 md:p-8">
+              <h3 className="font-black uppercase mb-6 flex items-center gap-2 text-sm">📝 Notes & Memories</h3>
+              <div className="font-medium text-lg leading-relaxed whitespace-pre-wrap">
+                {selectedMemory.story}
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* New Story Form State */}
+        {activeView === 'new' && (
+          <div className="bg-white border-4 border-black shadow-[12px_12px_0_rgba(0,0,0,1)] w-full max-w-3xl p-6 md:p-10 mb-10 animate-in zoom-in-95 duration-200">
+            <h2 className="text-2xl font-black uppercase mb-8 flex items-center gap-2">✍️ New Travel Story</h2>
+            
+            <form onSubmit={handleSubmitNewStory} className="space-y-6 font-bold text-sm">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block mb-2 uppercase tracking-wide">Story Title *</label>
+                  <input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} placeholder="e.g. Lost in Marrakech..." className="w-full border-4 border-black p-3 focus:outline-none focus:ring-4 focus:ring-[#BAE1FF] transition-all bg-white placeholder-gray-400" />
+                </div>
+                <div>
+                  <label className="block mb-2 uppercase tracking-wide">Destination *</label>
+                  <input required value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} placeholder="e.g. Marrakech, Morocco" className="w-full border-4 border-black p-3 focus:outline-none focus:ring-4 focus:ring-[#BAE1FF] transition-all bg-white placeholder-gray-400" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block mb-2 uppercase tracking-wide">Travel Date</label>
+                <input type="date" value={formData.dateOfTrip} onChange={e => setFormData({...formData, dateOfTrip: e.target.value})} className="w-full border-4 border-black p-3 focus:outline-none focus:ring-4 focus:ring-[#BAE1FF] transition-all bg-white" />
+              </div>
+
+              <div>
+                <label className="block mb-2 uppercase tracking-wide">Travel Notes & Memories</label>
+                <textarea required rows={6} value={formData.story} onChange={e => setFormData({...formData, story: e.target.value})} placeholder="Write your story here... What did you see? What made you laugh?" className="w-full border-4 border-black p-4 focus:outline-none focus:ring-4 focus:ring-[#BAE1FF] transition-all bg-white resize-none font-medium text-base" />
+              </div>
+
+              <div>
+                <label className="block mb-2 uppercase tracking-wide">Photos</label>
+                <div className="flex flex-col items-start gap-4">
+                  <label className="bg-[#BAE1FF] border-4 border-black px-6 py-3 font-black uppercase cursor-pointer shadow-[4px_4px_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_rgba(0,0,0,1)] transition-all flex items-center gap-2 text-sm">
+                    <Upload className="w-4 h-4" /> Upload Photos
+                    <input type="file" multiple accept="image/*" className="hidden" onChange={e => setImageFiles(Array.from(e.target.files).slice(0, 5))} />
+                  </label>
+                  {imageFiles.length > 0 && <p className="font-bold text-sm bg-black text-white px-3 py-1">{imageFiles.length} photo(s) ready</p>}
+                </div>
+              </div>
+
+              <div className="pt-6 flex gap-4">
+                <button type="submit" disabled={saving} className="bg-[#90EE90] border-4 border-black px-8 py-3 font-black uppercase flex items-center gap-2 shadow-[4px_4px_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_rgba(0,0,0,1)] transition-all disabled:opacity-70 disabled:cursor-not-allowed">
+                  💾 {saving ? 'Saving...' : 'Save Story'}
+                </button>
+                <button type="button" onClick={() => setActiveView(null)} className="bg-[#FFB3BA] border-4 border-black px-8 py-3 font-black uppercase shadow-[4px_4px_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_rgba(0,0,0,1)] transition-all">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
       </div>
     </div>
   );
