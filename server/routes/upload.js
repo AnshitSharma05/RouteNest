@@ -17,12 +17,7 @@ router.post('/', requireAuth(), upload.array('images', 5), async (req, res) => {
     
     const urls = [];
     
-    // Automatically create 'memories' bucket if it doesn't exist
-    const { data: buckets } = await supabase.storage.listBuckets();
-    if (!buckets.find(b => b.name === 'memories')) {
-      await supabase.storage.createBucket('memories', { public: true });
-    }
-    
+    // Upload files immediately without pre-fetching bucket lists to bypass Anon 403 restricts
     for (const file of req.files) {
       // Create a unique filename
       const fileExt = file.originalname.split('.').pop();
@@ -54,6 +49,7 @@ router.post('/', requireAuth(), upload.array('images', 5), async (req, res) => {
     res.json({ urls });
   } catch (error) {
     console.error('Error uploading images to Supabase:', error);
+    import('fs').then(fs => fs.writeFileSync('upload-error-debug.txt', String(error) + '\\n' + String(error.stack)));
     res.status(500).json({ error: 'Failed to upload images' });
   }
 });
