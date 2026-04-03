@@ -1,39 +1,58 @@
 import express from 'express';
 import { requireAuth } from '@clerk/express';
 import multer from 'multer';
-import { v2 as cloudinary } from 'cloudinary';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { createClient } from '@supabase/supabase-js';
 
 const router = express.Router();
 
-// Cloudinary config is automatically picked up from CLOUDINARY_URL or CLOUDINARY_* manually instantiated if needed
-// Let's configure it explicitly using the env vars
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+// Initialize Supabase Client
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY; // OR SUPABASE_ANON_KEY depending on what you have
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'routenest_diaries',
-    allowed_formats: ['jpg', 'png', 'jpeg', 'webp']
-  },
-});
-
+// Use memory storage to process uploads directly via buffer rather than local disk
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-router.post('/', requireAuth(), upload.array('images', 5), (req, res) => {
+router.post('/', requireAuth(), upload.array('images', 5), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: 'No images uploaded' });
     }
-    // Return the URLs provided by Cloudinary
-    const urls = req.files.map(file => file.path);
+    
+    const urls = [];
+    
+    for (const file of req.files) {
+      // Create a unique filename
+      const fileExt = file.originalname.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `routenest_diaries/${fileName}`;
+
+      // Upload directly to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('memories') // Your bucket name inside Supabase
+        .upload(filePath, file.buffer, {
+          contentType: file.mimetype,
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        throw error;
+      }
+      
+      // Get the Public URL of the uploaded image
+      const { data: publicUrlData } = supabase.storage
+        .from('memories')
+        .getPublicUrl(filePath);
+
+      urls.push(publicUrlData.publicUrl);
+    }
+    
+    // Return all uploaded public URLs back to the frontend
     res.json({ urls });
   } catch (error) {
-    console.error('Error uploading images:', error);
+    console.error('Error uploading images to Supabase:', error);
     res.status(500).json({ error: 'Failed to upload images' });
   }
 });
