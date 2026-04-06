@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import axios from 'axios';
 import { Trash2, MapPin, Calendar, Edit2, Upload, Compass, Image as ImageIcon } from 'lucide-react';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { API_URL } from '../apiConfig';
 
 const CARD_COLORS = ['#BAE1FF', '#FFDFD3', '#FFB3BA', '#90EE90', '#FFD166', '#E2B4D6'];
 const EMOJIS = ['✈️', '🗺️', '🏖️', '⛰️', '🌍', '🎒', '🚂', '⛵', '🌸', '🏛️'];

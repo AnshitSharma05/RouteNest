@@ -3,8 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Copy, CheckCircle2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { API_URL } from '../apiConfig';
 
 export default function SharedItinerary() {
   const { id } = useParams();

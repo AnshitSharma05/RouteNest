@@ -3,8 +3,7 @@ import { useAuth } from '@clerk/clerk-react';
 import axios from 'axios';
 import { MapPin, Loader2, Save, Trash2, Link as LinkIcon, Share2, Lock } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { API_URL } from '../apiConfig';
 
 export default function ItineraryGen() {
   const { getToken } = useAuth();
