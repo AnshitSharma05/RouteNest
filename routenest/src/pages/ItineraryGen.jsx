@@ -280,7 +280,7 @@ export default function ItineraryGen() {
 
               <div className="pt-4">
                 <button type="submit" disabled={loading || !form.destination.trim()} className="w-full bg-[#FFD166] border-4 border-black shadow-[6px_6px_0_rgba(0,0,0,1)] py-4 font-black uppercase text-lg text-black hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0_rgba(0,0,0,1)] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex justify-center items-center gap-2">
-                  {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : '✨ Generate Itinerary'}
+                  {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Generate Itinerary'}
                 </button>
               </div>
             </form>
