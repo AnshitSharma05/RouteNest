@@ -203,7 +203,7 @@ export default function ItineraryGen() {
           <div className="w-full max-w-4xl space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300 pb-12">
             <div className="border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] p-6 md:p-8 bg-[#E2B4D6] flex justify-between items-center">
               <div>
-                <h1 className="text-3xl font-black uppercase">✨ Your Fresh Itinerary</h1>
+                <h1 className="text-3xl font-black uppercase"> Your Fresh Itinerary</h1>
                 <p className="font-bold text-black mt-2">Generated for {form.destination}</p>
               </div>
               <button 
@@ -223,7 +223,7 @@ export default function ItineraryGen() {
                 onClick={handleSave}
                 disabled={saving}
                 className="w-full bg-[#90EE90] border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] py-4 font-black uppercase text-xl hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 flex justify-center mt-6">
-                {saving ? 'Saving...' : '💾 SAVE TO MY ITINERARIES'}
+                {saving ? 'Saving...' : ' SAVE TO MY ITINERARIES'}
             </button>
           </div>
         )}
@@ -231,7 +231,7 @@ export default function ItineraryGen() {
         {/* AI Itinerary Generator Form State */}
         {activeView === 'new' && !result && (
           <div className="bg-white border-4 border-black shadow-[12px_12px_0_rgba(0,0,0,1)] w-full max-w-3xl p-6 md:p-10 animate-in zoom-in-95 duration-200">
-            <h2 className="text-2xl font-black uppercase mb-2 flex items-center gap-2">🤖 AI Itinerary Generator</h2>
+            <h2 className="text-2xl font-black uppercase mb-2 flex items-center gap-2"> AI Itinerary Generator</h2>
             <p className="font-bold text-gray-500 mb-8 border-b-4 border-transparent pb-4">Powered by Gemini AI — describe your dream trip and get a full day-by-day plan</p>
             
             <form onSubmit={handleGenerate} className="space-y-6 font-bold text-sm">
