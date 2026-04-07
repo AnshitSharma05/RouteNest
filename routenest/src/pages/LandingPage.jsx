@@ -40,7 +40,7 @@ export default function LandingPage() {
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
             <SignInButton mode="modal">
               <button className="flex items-center gap-2 px-6 py-3 text-lg font-black uppercase tracking-wider text-black bg-[#90EE90] border-4 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all">
-                <span className="mr-2 text-xl">🚀</span> Start for free
+                Start for free
               </button>
             </SignInButton>
           </div>
@@ -61,13 +61,13 @@ export default function LandingPage() {
             {/* Tags */}
             <div className="flex flex-wrap gap-2 mb-5 font-bold text-[11px]">
               <div className="bg-[#FFD166] border-2 border-black px-2 py-0.5 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
-                🌅 SAHARA SUNRISE
+                SAHARA SUNRISE
               </div>
               <div className="bg-[#BAE1FF] border-2 border-black px-2 py-0.5 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
-                🗺️ FEZ MEDINA
+                FEZ MEDINA
               </div>
               <div className="bg-[#FFDFD3] border-2 border-black px-2 py-0.5 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
-                🐫 CAMEL TREK
+                CAMEL TREK
               </div>
             </div>
 
@@ -99,7 +99,7 @@ export default function LandingPage() {
 
           {/* Floating Badges */}
           <div className="absolute top-[8%] right-[-10%] lg:right-[-15%] bg-[#FFB3BA] border-4 border-black p-2 shadow-[4px_4px_0px_rgba(0,0,0,1)] rotate-6 z-20 font-bold max-w-[120px] text-xs text-center leading-tight">
-            ✨ AI itinerary generated in 2s
+            AI itinerary generated in 2s
           </div>
           
           <div className="absolute bottom-[2%] left-[-10%] lg:left-[-15%] bg-[#BAE1FF] border-4 border-black p-2 shadow-[4px_4px_0px_rgba(0,0,0,1)] -rotate-3 z-20 font-bold max-w-[160px] text-xs flex items-center gap-1.5 justify-center">

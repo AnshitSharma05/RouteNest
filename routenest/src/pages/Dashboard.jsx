@@ -5,7 +5,6 @@ import { Trash2, MapPin, Calendar, Edit2, Upload, Compass, Image as ImageIcon } 
 import { API_URL } from '../apiConfig';
 
 const CARD_COLORS = ['#BAE1FF', '#FFDFD3', '#FFB3BA', '#90EE90', '#FFD166', '#E2B4D6'];
-const EMOJIS = ['✈️', '🗺️', '🏖️', '⛰️', '🌍', '🎒', '🚂', '⛵', '🌸', '🏛️'];
 
 export default function Dashboard() {
   const { getToken } = useAuth();
@@ -17,7 +16,7 @@ export default function Dashboard() {
   const [saving, setSaving] = useState(false);
   const [imageFiles, setImageFiles] = useState([]);
   const [formData, setFormData] = useState({
-    title: '', location: '', dateOfTrip: '', story: '', emoji: '✈️', color: '#FFDFD3'
+    title: '', location: '', dateOfTrip: '', story: '', emoji: '', color: '#FFDFD3'
   });
   // Track if we are editing an existing memory via its ID
   const [editingId, setEditingId] = useState(null);
@@ -80,7 +79,7 @@ export default function Dashboard() {
       await fetchMemories();
       setActiveView(null);
       setEditingId(null);
-      setFormData({ title: '', location: '', dateOfTrip: '', story: '', emoji: '✈️', color: '#FFDFD3', pictures: [] });
+      setFormData({ title: '', location: '', dateOfTrip: '', story: '', emoji: '', color: '#FFDFD3', pictures: [] });
       setImageFiles([]);
     } catch (err) {
       console.error(err);
@@ -97,7 +96,7 @@ export default function Dashboard() {
           location: memory.location || '',
           dateOfTrip: memory.dateOfTrip || '',
           story: memory.story || '',
-          emoji: memory.emoji || '✈️',
+          emoji: memory.emoji || '',
           color: memory.color || '#FFDFD3',
           pictures: memory.pictures || []
       });
@@ -130,7 +129,7 @@ export default function Dashboard() {
               const isSelected = activeView === m.id;
               // Hardcoding emoji and color for existing memories if missing
               const mColor = m.color || '#FFDFD3';
-              const mEmoji = m.emoji || '🍜';
+              const mEmoji = m.emoji || '';
               
               return (
                 <div 
@@ -145,7 +144,7 @@ export default function Dashboard() {
                       <p className="font-bold text-[10px] text-gray-700 mt-0.5 truncate uppercase">{m.location}</p>
                       <p className="font-bold text-[10px] text-gray-500 mb-2 truncate">{m.dateOfTrip || 'Unknown Date'}</p>
                       <div className="inline-block bg-[#FFD166] border-2 border-black px-1.5 py-0.5 text-[9px] font-black shadow-[1px_1px_0_rgba(0,0,0,1)]">
-                        📸 {m.pictures?.length || 0} PHOTOS
+                        {m.pictures?.length || 0} PHOTOS
                       </div>
                     </div>
                   </div>
@@ -177,7 +176,7 @@ export default function Dashboard() {
             {/* Header Box */}
             <div className="border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6" style={{ backgroundColor: selectedMemory.color || '#FFDFD3' }}>
               <div className="flex items-center gap-4">
-                <div className="text-5xl">{selectedMemory.emoji || '🍜'}</div>
+                <div className="text-5xl">{selectedMemory.emoji || ''}</div>
                 <div>
                   <h1 className="text-3xl md:text-4xl font-black mb-3">{selectedMemory.title}</h1>
                   <div className="flex flex-wrap gap-2 text-xs font-bold uppercase tracking-wider">
@@ -217,7 +216,7 @@ export default function Dashboard() {
 
             {/* Notes Box */}
             <div className="bg-white border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] p-6 md:p-8">
-              <h3 className="font-black uppercase mb-6 flex items-center gap-2 text-sm">📝 Notes & Memories</h3>
+              <h3 className="font-black uppercase mb-6 flex items-center gap-2 text-sm">Notes & Memories</h3>
               <div className="font-medium text-lg leading-relaxed whitespace-pre-wrap">
                 {selectedMemory.story}
               </div>
@@ -230,7 +229,7 @@ export default function Dashboard() {
         {activeView === 'new' && (
           <div className="bg-white border-4 border-black shadow-[12px_12px_0_rgba(0,0,0,1)] w-full max-w-3xl p-6 md:p-10 mb-10 animate-in zoom-in-95 duration-200">
             <h2 className="text-2xl font-black uppercase mb-8 flex items-center gap-2">
-               {editingId ? '✏️ Edit Travel Story' : '✍️ New Travel Story'}
+               {editingId ? 'Edit Travel Story' : 'New Travel Story'}
             </h2>
             
             <form onSubmit={handleSubmitNewStory} className="space-y-6 font-bold text-sm">
@@ -268,7 +267,7 @@ export default function Dashboard() {
 
               <div className="pt-6 flex gap-4">
                 <button type="submit" disabled={saving} className="bg-[#90EE90] border-4 border-black px-8 py-3 font-black uppercase flex items-center gap-2 shadow-[4px_4px_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_rgba(0,0,0,1)] transition-all disabled:opacity-70 disabled:cursor-not-allowed">
-                  💾 {saving ? 'Saving...' : (editingId ? 'Update Story' : 'Save Story')}
+                  {saving ? 'Saving...' : (editingId ? 'Update Story' : 'Save Story')}
                 </button>
                 <button type="button" onClick={() => { setActiveView(null); setEditingId(null); setFormData({ title: '', location: '', dateOfTrip: '', story: '', emoji: '✈️', color: '#FFDFD3', pictures: [] }); setImageFiles([]); }} className="bg-[#FFB3BA] border-4 border-black px-8 py-3 font-black uppercase shadow-[4px_4px_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_rgba(0,0,0,1)] transition-all">
                   Cancel

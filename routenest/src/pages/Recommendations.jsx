@@ -45,7 +45,7 @@ export default function Recommendations() {
       {/* Sidebar Form */}
       <div className="w-full md:w-80 bg-white border-b-4 md:border-b-0 md:border-r-4 border-black flex flex-col shrink-0 z-10 shadow-[4px_0_0_rgba(0,0,0,1)] overflow-y-auto">
         <div className="bg-[#BAE1FF] border-b-4 border-black p-5">
-          <h2 className="font-black tracking-widest uppercase text-lg leading-none flex items-center gap-2">🌟 AI DISCOVER</h2>
+          <h2 className="font-black tracking-widest uppercase text-lg leading-none flex items-center gap-2">AI DISCOVER</h2>
           <p className="text-sm font-bold text-gray-700 mt-1">Personalized trip ideas just for you</p>
         </div>
         
@@ -108,7 +108,7 @@ export default function Recommendations() {
             type="submit" 
             disabled={loading}
             className="w-full bg-[#111] text-[#FFD166] border-4 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] py-3 font-black uppercase text-sm mt-4 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all disabled:opacity-75 flex justify-center items-center gap-2">
-            {loading ? <Loader2 className="w-5 h-5 animate-spin text-white" /> : '🌟 GET RECOMMENDATIONS'}
+            {loading ? <Loader2 className="w-5 h-5 animate-spin text-white" /> : 'GET RECOMMENDATIONS'}
           </button>
         </form>
       </div>
@@ -126,7 +126,6 @@ export default function Recommendations() {
 
         {loading && (
           <div className="flex flex-col items-center justify-center h-full text-center max-w-sm mx-auto">
-             <div className="text-6xl animate-bounce mb-4">🌍</div>
              <h2 className="text-2xl font-black uppercase">Finding the perfect spots...</h2>
           </div>
         )}
@@ -134,7 +133,7 @@ export default function Recommendations() {
         {result && !loading && (
           <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-300 pb-12">
             <div className="border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] p-6 md:p-8 bg-[#FFD166] mb-6">
-              <h1 className="text-3xl font-black uppercase">🎯 Your Personalized Matches</h1>
+              <h1 className="text-3xl font-black uppercase">Your Personalized Matches</h1>
               <p className="font-bold text-black mt-1">Based on what you told us.</p>
             </div>
 

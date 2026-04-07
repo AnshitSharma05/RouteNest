@@ -59,10 +59,10 @@ export default function SharedItinerary() {
       {/* Read-Only Banner */}
       <div className="bg-[#BAE1FF] border-b-4 border-black px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-4 sticky top-0 z-20">
         <div className="font-black text-sm uppercase tracking-wider flex items-center gap-2">
-          <span>👁️</span> READ-ONLY VIEW — THIS ITINERARY WAS SHARED PUBLICLY. YOU CAN VIEW BUT NOT EDIT IT.
+          READ-ONLY VIEW — THIS ITINERARY WAS SHARED PUBLICLY. YOU CAN VIEW BUT NOT EDIT IT.
         </div>
         <Link to="/" className="bg-[#90EE90] border-2 border-black font-black uppercase text-xs px-4 py-2 hover:bg-[#7ce27c] shadow-[2px_2px_0_rgba(0,0,0,1)] flex items-center gap-2 flex-shrink-0">
-          ✨ CREATE YOUR OWN FREE
+          CREATE YOUR OWN FREE
         </Link>
       </div>
       
@@ -78,13 +78,13 @@ export default function SharedItinerary() {
             
             <div className="flex flex-wrap gap-3 mb-6 font-black uppercase text-xs tracking-wide">
               <span className="bg-[#FFB3BA] border-4 border-black px-3 py-1 shadow-[4px_4px_0_rgba(0,0,0,1)] flex items-center gap-2">
-                📍 {itinerary.destination}
+                {itinerary.destination}
               </span>
               <span className="bg-white border-4 border-black px-3 py-1 shadow-[4px_4px_0_rgba(0,0,0,1)] flex items-center gap-2">
-                🗓️ {itinerary.days} DAYS
+                {itinerary.days} DAYS
               </span>
               <span className="bg-[#FFD166] border-4 border-black px-3 py-1 shadow-[4px_4px_0_rgba(0,0,0,1)] flex items-center gap-2">
-                👤 SHARED ROUTE
+                SHARED ROUTE
               </span>
             </div>
 
@@ -96,7 +96,7 @@ export default function SharedItinerary() {
           {/* Share Box Component */}
           <div className="bg-white border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] p-5 md:p-6 w-full md:w-[320px] shrink-0 font-bold">
             <div className="text-sm font-black uppercase tracking-widest mb-4 flex items-center gap-2 border-b-4 border-black pb-2">
-              🔗 SHARE THIS TRIP
+              SHARE THIS TRIP
             </div>
             <div className="bg-[#F4F1E1] border-4 border-black p-3 text-xs text-black truncate mb-4 select-all shadow-[inset_2px_2px_0_rgba(0,0,0,0.2)]">
               {window.location.href}
@@ -113,7 +113,6 @@ export default function SharedItinerary() {
         {/* Content Box */}
         <div className="border-4 border-black shadow-[16px_16px_0_rgba(0,0,0,1)] bg-white overflow-hidden mb-12">
           <div className="bg-white border-b-4 border-black p-4 md:px-10 md:py-6 flex items-center gap-3">
-             <span className="text-2xl">📅</span>
              <h2 className="text-xl font-black uppercase tracking-widest text-[#111]">DAY BY DAY PLAN</h2>
           </div>
           

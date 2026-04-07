@@ -34,13 +34,13 @@ export default function Navbar() {
             <SignedIn>
               <nav className="hidden md:flex gap-4 text-xs font-black tracking-widest uppercase">
                 <Link to="/dashboard" className={getLinkClass('/dashboard', 'bg-[#FFD166]')}>
-                  📖 STORIES
+                   STORIES
                 </Link>
                 <Link to="/itinerary" className={getLinkClass('/itinerary', 'bg-[#90EE90]')}>
-                  🗺️ ITINERARY
+                   ITINERARY
                 </Link>
                 <Link to="/recommendations" className={getLinkClass('/recommendations', 'bg-[#BAE1FF]')}>
-                  🌟 DISCOVER
+                   DISCOVER
                 </Link>
               </nav>
               <div className="border-2 border-[#FFD166] rounded-full p-0.5 shadow-[2px_2px_0px_rgba(255,209,102,0.5)]">

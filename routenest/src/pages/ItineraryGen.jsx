@@ -138,13 +138,12 @@ export default function ItineraryGen() {
                   onClick={() => setActiveView(i.id)}
                   className={`border-4 border-black p-3 cursor-pointer transition-all ${isSelected ? 'shadow-[4px_4px_0px_rgba(0,0,0,1)] translate-x-[-2px] translate-y-[-2px] bg-[#E2B4D6]' : 'shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] bg-white'}`}>
                   <div className="flex gap-2 items-start">
-                    <span className="text-xl">🗺️</span>
                     <div className="flex-1 overflow-hidden">
                       <h4 className="font-black text-[13px] truncate">{i.destination}</h4>
                       <p className="font-bold text-[10px] text-gray-700 mt-0.5 truncate uppercase">{i.days} DAYS</p>
                       <div className="mt-2 flex gap-2">
-                        <span className="inline-block bg-[#FFD166] border-2 border-black px-1.5 py-0.5 text-[9px] font-black shadow-[1px_1px_0_rgba(0,0,0,1)]">💾 SAVED</span>
-                        {i.is_public && <span className="inline-block bg-[#BAE1FF] border-2 border-black px-1.5 py-0.5 text-[9px] font-black shadow-[1px_1px_0_rgba(0,0,0,1)]">🔗 SHARED</span>}
+                        <span className="inline-block bg-[#FFD166] border-2 border-black px-1.5 py-0.5 text-[9px] font-black shadow-[1px_1px_0_rgba(0,0,0,1)]">SAVED</span>
+                        {i.is_public && <span className="inline-block bg-[#BAE1FF] border-2 border-black px-1.5 py-0.5 text-[9px] font-black shadow-[1px_1px_0_rgba(0,0,0,1)]">SHARED</span>}
                       </div>
                     </div>
                   </div>
