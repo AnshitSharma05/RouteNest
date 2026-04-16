@@ -10,21 +10,21 @@
 
 ---
 
-## ⚡ Overview
+##  Overview
 
 **RouteNest** is a full-stack, production-ready web application designed to take the guesswork out of traveling. Whether you want to generate a hyper-realistic, day-by-day travel itinerary using advanced AI or safely vault your precious vacation memories (with photos), RouteNest beautifully handles it all. 
 
 Designed entirely with modern **Neo-Brutalism** aesthetics, it features sharp angles, harsh shadows, and bold colors that make user interaction incredibly satisfying.
 
-## 🌟 Key Features
+##  Key Features
 
-* **🤖 AI Itinerary Generation:** Describe your dream trip, budget, and vibe—and let Google Gemini AI build a sensible, day-by-day personalized Markdown travel plan.
-* **📸 Travel Memory Vault:** Document past trips by securely uploading up to 5 photos per memory directly to Supabase Storage, alongside notes and locations.
-* **🔗 Public Trip Sharing:** Instantly convert any private itinerary into a sleek, Read-Only Public URL to securely share your curated trips with friends or social media.
-* **🔒 Bulletproof Authentication:** Fully integrated with Clerk Auth on both the Frontend UI and Backend API for strict data protection.
-* **📱 Responsive Neo-Brutalist UI:** Custom TailwindCSS architecture delivering satisfying micro-animations, bold typography, and extreme visual clarity.
+* ** AI Itinerary Generation:** Describe your dream trip, budget, and vibe—and let Google Gemini AI build a sensible, day-by-day personalized Markdown travel plan.
+* ** Travel Memory Vault:** Document past trips by securely uploading up to 5 photos per memory directly to Supabase Storage, alongside notes and locations.
+* ** Public Trip Sharing:** Instantly convert any private itinerary into a sleek, Read-Only Public URL to securely share your curated trips with friends or social media.
+* ** Bulletproof Authentication:** Fully integrated with Clerk Auth on both the Frontend UI and Backend API for strict data protection.
+* ** Responsive Neo-Brutalist UI:** Custom TailwindCSS architecture delivering satisfying micro-animations, bold typography, and extreme visual clarity.
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 **Frontend (`/routenest`):**
 * React.js (Vite)
