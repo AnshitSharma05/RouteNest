@@ -42,6 +42,9 @@ export default function Navbar() {
                 <Link to="/recommendations" className={getLinkClass('/recommendations', 'bg-[#BAE1FF]')}>
                    DISCOVER
                 </Link>
+                <Link to="/community" className={getLinkClass('/community', 'bg-[#FFB3BA]')}>
+                   COMMUNITY
+                </Link>
               </nav>
               <div className="border-2 border-[#FFD166] rounded-full p-0.5 shadow-[2px_2px_0px_rgba(255,209,102,0.5)]">
                 <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: "w-9 h-9" } }}/>

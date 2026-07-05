@@ -9,18 +9,18 @@ async function testBucket() {
     console.error("List Error:", listError);
     return;
   }
-  
+
   const memoriesBucket = buckets.find(b => b.name === 'memories');
   if (!memoriesBucket) {
-     console.log("Bucket not found, creating 'memories'...");
-     const { data, error: createError } = await supabase.storage.createBucket('memories', { public: true });
-     if (createError) {
-       console.error("Create Error:", createError);
-       return;
-     }
-     console.log("Bucket created successfully:", data);
+    console.log("Bucket not found, creating 'memories'...");
+    const { data, error: createError } = await supabase.storage.createBucket('memories', { public: true });
+    if (createError) {
+      console.error("Create Error:", createError);
+      return;
+    }
+    console.log("Bucket created successfully:", data);
   } else {
-     console.log("Bucket already exists.");
+    console.log("Bucket already exists.");
   }
 }
 

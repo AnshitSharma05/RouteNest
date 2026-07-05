@@ -9,6 +9,7 @@ import NewDiary from './pages/NewDiary'
 import Recommendations from './pages/Recommendations'
 import ItineraryGen from './pages/ItineraryGen'
 import SharedItinerary from './pages/SharedItinerary'
+import Community from './pages/Community'
 
 function ProtectedRoute({ children }) {
   const { isLoaded, isSignedIn } = useAuth();
@@ -45,6 +46,10 @@ function App() {
           <Route 
             path="/itinerary" 
             element={<ProtectedRoute><ItineraryGen /></ProtectedRoute>} 
+          />
+          <Route 
+            path="/community" 
+            element={<ProtectedRoute><Community /></ProtectedRoute>} 
           />
         </Routes>
       </main>

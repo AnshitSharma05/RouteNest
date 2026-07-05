@@ -10,8 +10,6 @@ let ai;
 if (process.env.GEMINI_API_KEY) {
   ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 }
-
-// Generate new itinerary via Gemini
 router.post('/generate', requireAuth(), async (req, res) => {
   try {
     if (!ai) {
@@ -19,7 +17,7 @@ router.post('/generate', requireAuth(), async (req, res) => {
     }
 
     const { destination, days, extraDetails } = req.body;
-    
+
     if (!destination || !days) {
       return res.status(400).json({ error: 'Destination and days are required' });
     }
@@ -30,8 +28,8 @@ Additional details from traveler: "${extraDetails || 'None'}".
 Format the itinerary clearly in Markdown, day by day. Please make it sound like it was written by an experienced human travel planner.`;
 
     const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt
+      model: 'gemini-2.5-flash',
+      contents: prompt
     });
 
     res.json({ itinerary: response.text });
@@ -40,16 +38,14 @@ Format the itinerary clearly in Markdown, day by day. Please make it sound like 
     res.status(500).json({ error: 'Failed to generate itinerary' });
   }
 });
-
-// Save an itinerary to Supabase
 router.post('/save', requireAuth(), async (req, res) => {
   try {
     const auth = getAuth(req);
     const userId = auth.userId || req.auth?.userId;
     console.log('Decoded Auth Payload:', JSON.stringify(auth));
-    
+
     if (!userId) {
-       return res.status(401).json({ error: 'Unauthorized: User ID is missing' });
+      return res.status(401).json({ error: 'Unauthorized: User ID is missing' });
     }
 
     const { destination, days, content } = req.body;
@@ -79,8 +75,6 @@ router.post('/save', requireAuth(), async (req, res) => {
     res.status(500).json({ error: 'Failed to save itinerary' });
   }
 });
-
-// Get user's saved itineraries
 router.get('/', requireAuth(), async (req, res) => {
   try {
     const { userId } = getAuth(req);
@@ -97,8 +91,6 @@ router.get('/', requireAuth(), async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch itineraries' });
   }
 });
-
-// Delete an itinerary
 router.delete('/:id', requireAuth(), async (req, res) => {
   try {
     const { userId } = getAuth(req);
@@ -108,19 +100,17 @@ router.delete('/:id', requireAuth(), async (req, res) => {
       .eq('id', req.params.id)
       .eq('user_id', userId)
       .select();
-    
+
     if (error) throw error;
     if (data.length === 0) {
       return res.status(404).json({ error: 'Itinerary not found' });
     }
-    
+
     res.json({ message: 'Itinerary deleted' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete' });
   }
 });
-
-// Toggle public status
 router.patch('/:id/share', requireAuth(), async (req, res) => {
   try {
     const { userId } = getAuth(req);
@@ -130,11 +120,11 @@ router.patch('/:id/share', requireAuth(), async (req, res) => {
       .eq('id', req.params.id)
       .eq('user_id', userId)
       .single();
-    
+
     if (fetchErr || !itinerary) {
       return res.status(404).json({ error: 'Itinerary not found' });
     }
-    
+
     const { data, error: updateErr } = await supabase
       .from('itineraries')
       .update({ is_public: !itinerary.is_public })
@@ -144,7 +134,7 @@ router.patch('/:id/share', requireAuth(), async (req, res) => {
       .single();
 
     if (updateErr) throw updateErr;
-    
+
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: 'Failed to update visibility' });
