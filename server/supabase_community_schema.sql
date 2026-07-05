@@ -18,14 +18,13 @@ INSERT INTO communities (name, description, created_by) VALUES
 ('solo-travelers', 'Connecting solo wanderers across the globe.', 'system')
 ON CONFLICT (name) DO NOTHING;
 
--- 2. Create Community Posts Table
 CREATE TABLE IF NOT EXISTS community_posts (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   community_id UUID REFERENCES communities(id) ON DELETE CASCADE,
   user_id TEXT NOT NULL,
   title TEXT NOT NULL,
   content TEXT NOT NULL,
-  post_type TEXT NOT NULL DEFAULT 'general', -- 'story', 'itinerary', 'general'
+  post_type TEXT NOT NULL DEFAULT 'general', 
   location TEXT,
   pictures TEXT[] DEFAULT '{}',
   original_memory_id UUID REFERENCES memories(id) ON DELETE SET NULL,
@@ -33,7 +32,6 @@ CREATE TABLE IF NOT EXISTS community_posts (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 3. Create Community Comments Table
 CREATE TABLE IF NOT EXISTS community_comments (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   post_id UUID REFERENCES community_posts(id) ON DELETE CASCADE,
@@ -42,7 +40,6 @@ CREATE TABLE IF NOT EXISTS community_comments (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 4. Create Community Post Votes Table (Reddit-style upvotes/downvotes)
 CREATE TABLE IF NOT EXISTS community_post_votes (
   post_id UUID REFERENCES community_posts(id) ON DELETE CASCADE,
   user_id TEXT NOT NULL,

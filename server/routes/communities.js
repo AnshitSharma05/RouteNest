@@ -3,13 +3,11 @@ import { requireAuth, getAuth } from '@clerk/express';
 import { supabase } from '../lib/supabase.js';
 
 const router = express.Router();
-
-// Helper function to generate a deterministic traveler pseudonym
 function getPseudonym(userId) {
   if (!userId) return 'Anonymous';
   const adjectives = ['Wandering', 'Nomadic', 'Adventurous', 'Curious', 'Lost', 'Sunny', 'Wild', 'Jolly', 'Daring', 'Spirited', 'Roamer', 'Wayfarer'];
   const nouns = ['Panda', 'Explorer', 'Traveler', 'Backpacker', 'Koala', 'Nomad', 'Fox', 'Eagle', 'Otter', 'Penguin', 'Wolf', 'Deer'];
-  
+
   let hash = 0;
   for (let i = 0; i < userId.length; i++) {
     hash = userId.charCodeAt(i) + ((hash << 5) - hash);
@@ -17,11 +15,9 @@ function getPseudonym(userId) {
   const adjIndex = Math.abs(hash) % adjectives.length;
   const nounIndex = Math.abs(hash >> 2) % nouns.length;
   const num = Math.abs(hash >> 4) % 1000;
-  
+
   return `${adjectives[adjIndex]} ${nouns[nounIndex]} #${num}`;
 }
-
-// 1. Get all communities
 router.get('/', async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -36,8 +32,6 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch communities' });
   }
 });
-
-// 2. Create a new community
 router.post('/', requireAuth(), async (req, res) => {
   try {
     const { userId } = getAuth(req);
@@ -47,7 +41,6 @@ router.post('/', requireAuth(), async (req, res) => {
       return res.status(400).json({ error: 'Community name is required' });
     }
 
-    // Slugify and clean name
     name = name
       .toLowerCase()
       .trim()
@@ -77,8 +70,6 @@ router.post('/', requireAuth(), async (req, res) => {
     res.status(500).json({ error: 'Failed to create community' });
   }
 });
-
-// 3. Get all posts (general feed from all communities)
 router.get('/posts', async (req, res) => {
   try {
     let userId = null;
@@ -86,7 +77,6 @@ router.get('/posts', async (req, res) => {
       const auth = getAuth(req);
       userId = auth?.userId;
     } catch (_) {
-      // Allow optional auth for viewing posts
     }
 
     const { data: posts, error } = await supabase
@@ -103,11 +93,11 @@ router.get('/posts', async (req, res) => {
 
     const postsWithDetails = posts.map(post => {
       const commentsCount = post.community_comments ? post.community_comments.length : 0;
-      
+
       let upvotes = 0;
       let downvotes = 0;
       let userVote = 0;
-      
+
       if (post.community_post_votes) {
         post.community_post_votes.forEach(v => {
           if (v.vote === 1) upvotes++;
@@ -140,8 +130,6 @@ router.get('/posts', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch posts' });
   }
 });
-
-// 4. Get posts for a specific community
 router.get('/:communityId/posts', async (req, res) => {
   try {
     const { communityId } = req.params;
@@ -150,7 +138,6 @@ router.get('/:communityId/posts', async (req, res) => {
       const auth = getAuth(req);
       userId = auth?.userId;
     } catch (_) {
-      // Allow optional auth
     }
 
     const { data: posts, error } = await supabase
@@ -167,11 +154,11 @@ router.get('/:communityId/posts', async (req, res) => {
 
     const postsWithDetails = posts.map(post => {
       const commentsCount = post.community_comments ? post.community_comments.length : 0;
-      
+
       let upvotes = 0;
       let downvotes = 0;
       let userVote = 0;
-      
+
       if (post.community_post_votes) {
         post.community_post_votes.forEach(v => {
           if (v.vote === 1) upvotes++;
@@ -203,8 +190,6 @@ router.get('/:communityId/posts', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch posts' });
   }
 });
-
-// 5. Create a post in a community
 router.post('/:communityId/posts', requireAuth(), async (req, res) => {
   try {
     const { userId } = getAuth(req);
@@ -248,8 +233,6 @@ router.post('/:communityId/posts', requireAuth(), async (req, res) => {
     res.status(500).json({ error: 'Failed to create post' });
   }
 });
-
-// 6. Delete a post
 router.delete('/posts/:postId', requireAuth(), async (req, res) => {
   try {
     const { userId } = getAuth(req);
@@ -274,20 +257,17 @@ router.delete('/posts/:postId', requireAuth(), async (req, res) => {
     res.status(500).json({ error: 'Failed to delete post' });
   }
 });
-
-// 7. Vote on a post (upvote/downvote/reset)
 router.post('/posts/:postId/vote', requireAuth(), async (req, res) => {
   try {
     const { userId } = getAuth(req);
     const { postId } = req.params;
-    const { vote } = req.body; // 1, -1, or 0 (0 to delete vote)
+    const { vote } = req.body;
 
     if (![1, -1, 0].includes(vote)) {
       return res.status(400).json({ error: 'Invalid vote value' });
     }
 
     if (vote === 0) {
-      // Delete existing vote
       const { error } = await supabase
         .from('community_post_votes')
         .delete()
@@ -296,7 +276,7 @@ router.post('/posts/:postId/vote', requireAuth(), async (req, res) => {
 
       if (error) throw error;
     } else {
-      // Upsert vote
+
       const { error } = await supabase
         .from('community_post_votes')
         .upsert(
@@ -306,8 +286,6 @@ router.post('/posts/:postId/vote', requireAuth(), async (req, res) => {
 
       if (error) throw error;
     }
-
-    // Return the updated aggregate score for the post
     const { data: votes, error: fetchErr } = await supabase
       .from('community_post_votes')
       .select('vote')
@@ -326,8 +304,6 @@ router.post('/posts/:postId/vote', requireAuth(), async (req, res) => {
     res.status(500).json({ error: 'Failed to submit vote' });
   }
 });
-
-// 8. Get comments for a post
 router.get('/posts/:postId/comments', async (req, res) => {
   try {
     const { postId } = req.params;
@@ -350,8 +326,6 @@ router.get('/posts/:postId/comments', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch comments' });
   }
 });
-
-// 9. Post a comment
 router.post('/posts/:postId/comments', requireAuth(), async (req, res) => {
   try {
     const { userId } = getAuth(req);
