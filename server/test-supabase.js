@@ -11,23 +11,23 @@ const supabase = createClient(
 async function test() {
   console.log("Testing Supabase Insert...");
   const { data, error } = await supabase
-      .from('itineraries')
-      .insert([
-        {
-          user_id: 'test_user_id',
-          destination: 'Test Dest',
-          days: 7,
-          content: 'Test content',
-          is_public: false
-        }
-      ])
-      .select();
+    .from('itineraries')
+    .insert([
+      {
+        user_id: 'test_user_id',
+        destination: 'Test Dest',
+        days: 7,
+        content: 'Test content',
+        is_public: false
+      }
+    ])
+    .select();
 
   console.log('Result:', JSON.stringify({ data, error }, null, 2));
-  
+
   if (data) {
-     await supabase.from('itineraries').delete().eq('user_id', 'test_user_id');
-     console.log("Cleanup complete.");
+    await supabase.from('itineraries').delete().eq('user_id', 'test_user_id');
+    console.log("Cleanup complete.");
   }
 }
 

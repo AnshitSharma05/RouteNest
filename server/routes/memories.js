@@ -4,7 +4,6 @@ import { supabase } from '../lib/supabase.js';
 
 const router = express.Router();
 
-// Get all memories for the authenticated user
 router.get('/', requireAuth(), async (req, res) => {
   try {
     const { userId } = getAuth(req);
@@ -21,13 +20,11 @@ router.get('/', requireAuth(), async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch memories' });
   }
 });
-
-// Create a new memory
 router.post('/', requireAuth(), async (req, res) => {
   try {
     const { userId } = getAuth(req);
     const { title, story, pictures, location, dateOfTrip } = req.body;
-    
+
     if (!title || !story) {
       return res.status(400).json({ error: 'Title and story are required' });
     }
@@ -54,13 +51,11 @@ router.post('/', requireAuth(), async (req, res) => {
     res.status(500).json({ error: 'Failed to create memory' });
   }
 });
-
-// Delete a memory
 router.delete('/:id', requireAuth(), async (req, res) => {
   try {
     const { userId } = getAuth(req);
     const memoryId = req.params.id;
-    
+
     const { data, error } = await supabase
       .from('memories')
       .delete()
@@ -72,15 +67,13 @@ router.delete('/:id', requireAuth(), async (req, res) => {
     if (data.length === 0) {
       return res.status(404).json({ error: 'Memory not found or unauthorized' });
     }
-    
+
     res.json({ message: 'Memory deleted successfully' });
   } catch (error) {
     console.error('Error deleting memory:', error);
     res.status(500).json({ error: 'Failed to delete memory' });
   }
 });
-
-// Update an existing memory
 router.patch('/:id', requireAuth(), async (req, res) => {
   try {
     const { userId } = getAuth(req);
