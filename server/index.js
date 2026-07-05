@@ -35,4 +35,3 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// Triggering nodemon restart to load new .env variables 2
