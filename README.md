@@ -10,7 +10,7 @@
 
 ---
 
-## ⚡ Overview
+##  Overview
 
 **RouteNest** is a full-stack, production-ready web application designed to take the guesswork out of traveling and connect travelers. Whether you want to generate a hyper-realistic, day-by-day travel itinerary using advanced AI, safely vault your precious vacation memories (with photos), or share travel experiences anonymously in interest-based community groups, RouteNest handles it all in a single elegant platform.
 
@@ -18,23 +18,23 @@ Designed entirely with modern **Neo-Brutalism** aesthetics, it features sharp an
 
 ---
 
-## 🌟 Key Features
+##  Key Features
 
-* **🤖 AI Itinerary Generation:** Describe your dream destination, budget, duration, and vibe—and let Google Gemini AI build a sensible, day-by-day personalized Markdown travel plan.
-* **📸 Travel Memory Vault:** Document past trips by securely uploading up to 5 photos per memory directly to Supabase Storage, alongside notes, destinations, and dates.
-* **👥 Travel Communities (Anonymous Board):**
+* ** AI Itinerary Generation:** Describe your dream destination, budget, duration, and vibe—and let Google Gemini AI build a sensible, day-by-day personalized Markdown travel plan.
+* ** Travel Memory Vault:** Document past trips by securely uploading up to 5 photos per memory directly to Supabase Storage, alongside notes, destinations, and dates.
+* ** Travel Communities (Anonymous Board):**
   * **Channel Creation:** Join interest-based groups (e.g., `backpacking-europe`, `solo-travelers`) or create your own custom channels.
   * **Anonymous Posting:** Share itineraries, travel stories, or general discussions.
   * **Import Stored Content:** Publish your previously saved vault memories or saved AI itineraries anonymously with a single click.
   * **Reddit-style Voting:** Upvote and downvote posts to help bubble up the best recommendations.
   * **Comment Threads:** Collaborate on posts under deterministically assigned pseudonyms (e.g. `Nomadic Panda #43`), protecting user privacy.
-* **🔗 Public Trip Sharing:** Instantly convert any private itinerary into a sleek, Read-Only Public URL to securely share your curated trips with friends or social media.
-* **🔒 Bulletproof Authentication:** Fully integrated with Clerk Auth on both the Frontend UI and Backend API for strict data protection.
-* **📱 Responsive Neo-Brutalist UI:** Custom TailwindCSS architecture delivering satisfying micro-animations, bold typography, and extreme visual clarity.
+* ** Public Trip Sharing:** Instantly convert any private itinerary into a sleek, Read-Only Public URL to securely share your curated trips with friends or social media.
+* ** Bulletproof Authentication:** Fully integrated with Clerk Auth on both the Frontend UI and Backend API for strict data protection.
+* ** Responsive Neo-Brutalist UI:** Custom TailwindCSS architecture delivering satisfying micro-animations, bold typography, and extreme visual clarity.
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 **Frontend (`/routenest`):**
 * **Framework:** React.js (Vite)
@@ -51,7 +51,7 @@ Designed entirely with modern **Neo-Brutalism** aesthetics, it features sharp an
 
 ---
 
-## 🏛️ System Architecture
+##  System Architecture
 
 RouteNest operates on a completely decoupled **Client-Server architecture** designed for data integrity, security, and performance.
 
@@ -74,7 +74,7 @@ RouteNest operates on a completely decoupled **Client-Server architecture** desi
 
 ---
 
-## 💾 Database Schema
+##  Database Schema
 
 RouteNest utilizes six core PostgreSQL tables in Supabase:
 
@@ -107,7 +107,7 @@ RouteNest utilizes six core PostgreSQL tables in Supabase:
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 * Node.js (v18+)
