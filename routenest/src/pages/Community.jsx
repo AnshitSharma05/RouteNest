@@ -519,7 +519,7 @@ export default function Community() {
                       )}
 
                       {/* Story Content / Itinerary Markdown */}
-                      <div className="prose prose-slate prose-sm max-w-none text-gray-800 font-medium leading-relaxed mb-4 whitespace-pre-wrap">
+                      <div className="w-full break-words text-gray-800 font-medium leading-relaxed mb-4 whitespace-pre-wrap min-w-0">
                         {post.post_type === 'itinerary' ? (
                           <div className="border-l-4 border-[#FFD166] pl-4 py-1 bg-yellow-50/50">
                             <ReactMarkdown>{post.content}</ReactMarkdown>
