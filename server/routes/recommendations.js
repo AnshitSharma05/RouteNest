@@ -17,8 +17,8 @@ router.post('/', requireAuth(), async (req, res) => {
       return res.status(500).json({ error: 'Gemini API is not configured on the server.' });
     }
 
-    const { preferences } = req.body; // e.g. "I love mountains, quiet towns, and coffee"
-    
+    const { preferences } = req.body;
+
     if (!preferences) {
       return res.status(400).json({ error: 'Preferences are required' });
     }
@@ -27,8 +27,8 @@ router.post('/', requireAuth(), async (req, res) => {
 For each destination, provide a brief description of why it fits and top 2 things to do. Keep the tone enthusiastic but human-like, not robotic. Format in Markdown.`;
 
     const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt
+      model: 'gemini-2.5-flash',
+      contents: prompt
     });
 
     res.json({ recommendations: response.text });

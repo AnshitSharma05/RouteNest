@@ -7,6 +7,7 @@ import recommendationRoutes from './routes/recommendations.js';
 import itineraryRoutes from './routes/itineraries.js';
 import uploadRoutes from './routes/upload.js';
 import publicRoutes from './routes/public.js';
+import communityRoutes from './routes/communities.js';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use('/api/memories', memoryRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/itineraries', itineraryRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/communities', communityRoutes);
 
 app.get('/', (req, res) => {
   res.send('RouteNest API is running');
@@ -33,4 +35,3 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// Triggering nodemon restart to load new .env variables 2

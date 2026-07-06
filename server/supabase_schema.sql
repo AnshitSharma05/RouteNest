@@ -1,5 +1,3 @@
--- Run this entire script in your Supabase SQL Editor
-
 CREATE TABLE IF NOT EXISTS memories (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id TEXT NOT NULL,
@@ -21,6 +19,3 @@ CREATE TABLE IF NOT EXISTS itineraries (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Note: Since we are querying via a trusted backend Express server acting as an admin, 
--- we do not necessarily need Row Level Security (RLS) policies here, 
--- but it's good practice to secure them anyway if you ever expose the Anon Key to the frontend.

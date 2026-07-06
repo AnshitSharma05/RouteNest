@@ -10,15 +10,15 @@ router.get('/itineraries/:id', async (req, res) => {
       .select('*')
       .eq('id', req.params.id)
       .single();
-    
+
     if (error || !itinerary) {
       return res.status(404).json({ error: 'Itinerary not found' });
     }
-    
+
     if (!itinerary.is_public) {
       return res.status(403).json({ error: 'This itinerary is completely private' });
     }
-    
+
     res.json(itinerary);
   } catch (error) {
     console.error('Error fetching public itinerary:', error);
