@@ -449,7 +449,7 @@ export default function Community() {
               const color = CARD_COLORS[idx % CARD_COLORS.length];
               const isExpanded = expandedComments[post.id];
               return (
-                <div key={post.id} className="border-4 border-black bg-white shadow-[8px_8px_0_rgba(0,0,0,1)] flex overflow-hidden">
+                <div key={post.id} className="border-4 border-black bg-white shadow-[8px_8px_0_rgba(0,0,0,1)] flex overflow-hidden min-w-0">
                   
                   {/* Voting Panel */}
                   <div className="w-14 bg-gray-50 border-r-4 border-black flex flex-col items-center pt-4 select-none shrink-0">
