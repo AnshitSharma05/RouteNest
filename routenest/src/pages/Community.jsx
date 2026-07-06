@@ -413,7 +413,7 @@ export default function Community() {
       </div>
 
       {/* Main content Area */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col items-center">
+      <div className="flex-1 min-w-0 overflow-y-auto p-4 md:p-8 flex flex-col items-center">
         
         {/* Active Header Box */}
         <div className="w-full max-w-4xl border-4 border-black bg-white shadow-[8px_8px_0_rgba(0,0,0,1)] p-6 md:p-8 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -469,7 +469,7 @@ export default function Community() {
                   </div>
 
                   {/* Main Card Content */}
-                  <div className="flex-1 flex flex-col">
+                  <div className="flex-1 flex flex-col min-w-0">
                     <div className="p-5 md:p-6 flex-1">
                       
                       {/* Meta header */}
