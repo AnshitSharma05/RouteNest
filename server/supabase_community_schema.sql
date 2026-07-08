@@ -1,7 +1,3 @@
--- Run this entire script in your Supabase SQL Editor
--- It will set up the necessary tables for the Community feature.
-
--- 1. Create Communities Table
 CREATE TABLE IF NOT EXISTS communities (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT UNIQUE NOT NULL,
@@ -9,14 +5,6 @@ CREATE TABLE IF NOT EXISTS communities (
   created_by TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
-
--- Seed initial communities
-INSERT INTO communities (name, description, created_by) VALUES
-('backpacking-europe', 'Tips, stories, and itineraries for budget travel across Europe.', 'system'),
-('asia-backpackers', 'Exploring South East Asia, East Asia, and beyond.', 'system'),
-('luxury-getaways', 'For those who love first-class travel and fine dining.', 'system'),
-('solo-travelers', 'Connecting solo wanderers across the globe.', 'system')
-ON CONFLICT (name) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS community_posts (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
